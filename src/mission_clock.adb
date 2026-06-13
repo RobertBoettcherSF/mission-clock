@@ -7,9 +7,8 @@
 
 with Ada.Real_Time; use Ada.Real_Time;
 with Ada.Calendar; use Ada.Calendar;
-with Ada.Strings.Fixed;
 
-package body Mission_Clock is
+package body mission_clock is
 
    --  Epoch for mission clock (2024-01-01 00:00:00 UTC)
    Mission_Epoch : constant Time := Time_Of (2024, 1, 1, 0, 0, 0, 0);
@@ -123,8 +122,6 @@ package body Mission_Clock is
       Minutes : constant Long_Integer := (Seconds mod 3600) / 60;
       Secs : constant Long_Integer := Seconds mod 60;
       Nanos : constant Long_Integer := Remainder;
-
-      package Long_Int_IO is new Ada.Text_IO.Integer_IO (Long_Integer);
    begin
       return "Mission_Time(" & 
              Hours'Image & ":" & 
@@ -133,4 +130,4 @@ package body Mission_Clock is
              Nanos'Image & ")";
    end Image;
 
-end Mission_Clock;
+end mission_clock;

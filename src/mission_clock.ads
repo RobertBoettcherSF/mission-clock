@@ -7,7 +7,7 @@
 
 with Ada.Real_Time; use Ada.Real_Time;
 
-package Mission_Clock is
+package mission_clock is
 
    --  Clock type for mission-critical timing
    type Mission_Time is private;
@@ -57,4 +57,4 @@ private
    Mission_Time_Zero : constant Mission_Time := 0;
    Mission_Time_Max  : constant Mission_Time := Mission_Time'Last;
 
-end Mission_Clock;
+end mission_clock;
