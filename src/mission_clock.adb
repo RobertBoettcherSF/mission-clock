@@ -6,33 +6,36 @@
 --  License: MIT (see LICENSE file)
 
 with Ada.Real_Time; use Ada.Real_Time;
-with Ada.Calendar; use Ada.Calendar;
 
 package body mission_clock is
 
    --  Epoch for mission clock (2024-01-01 00:00:00 UTC)
-   Mission_Epoch : constant Time := Time_Of (2024, 1, 1, 0, 0, 0, 0);
+   --  Using Clock_Epoch as reference
+   Mission_Epoch : constant Time := Clock_Epoch;
 
    --  Nanoseconds per second
    Nanoseconds_Per_Second : constant := 1_000_000_000;
 
    --  Convert Time to Mission_Time (nanoseconds since mission epoch)
    function To_Mission_Time (T : Time) return Mission_Time is
-      Time_Delta : constant Time_Span := T - Mission_Epoch;
-      Seconds : constant Time_Span := Time_Delta / 1.0;
-      Sub_Seconds : constant Time_Span := Time_Delta - Seconds * 1.0;
-      Nanos : constant := Duration (Sub_Seconds) * Duration (Nanoseconds_Per_Second);
+      Time_Diff : constant Time_Span := T - Mission_Epoch;
+      Total_Nanos : constant Long_Integer := 
+        Long_Integer (Time_Diff / Millisecond) * 1_000_000 +
+        Long_Integer ((Time_Diff % Millisecond) / Microsecond) * 1_000 +
+        Long_Integer ((Time_Diff % Microsecond) / Nanosecond);
    begin
-      return Mission_Time (Long_Integer (Seconds) * Long_Integer (Nanoseconds_Per_Second) + Long_Integer (Nanos));
+      return Mission_Time (Total_Nanos);
    end To_Mission_Time;
 
    --  Convert Mission_Time to Time
    function To_Time (MT : Mission_Time) return Time is
       Total_Nanos : constant Long_Integer := Long_Integer (MT);
       Seconds : constant Long_Integer := Total_Nanos / Nanoseconds_Per_Second;
-      Remainder : constant Long_Integer := Total_Nanos mod Nanoseconds_Per_Second;
+      Remainder_Nanos : constant Long_Integer := Total_Nanos mod Nanoseconds_Per_Second;
    begin
-      return Mission_Epoch + Time_Span (Seconds) + Time_Span (Remainder) / Time_Span (Nanoseconds_Per_Second);
+      return Mission_Epoch + 
+        Time_Span (Seconds) * Second + 
+        Time_Span (Remainder_Nanos) * Nanosecond;
    end To_Time;
 
    --  Get current mission time
@@ -43,20 +46,22 @@ package body mission_clock is
 
    --  Convert Time_Span to Mission_Time
    function To_Mission_Time (D : Time_Span) return Mission_Time is
-      Seconds : constant Long_Integer := Long_Integer (D);
-      Sub_Seconds : constant Time_Span := D - Time_Span (Seconds);
-      Nanos : constant := Duration (Sub_Seconds) * Duration (Nanoseconds_Per_Second);
+      Total_Nanos : constant Long_Integer := 
+        Long_Integer (D / Millisecond) * 1_000_000 +
+        Long_Integer ((D % Millisecond) / Microsecond) * 1_000 +
+        Long_Integer ((D % Microsecond) / Nanosecond);
    begin
-      return Mission_Time (Seconds * Long_Integer (Nanoseconds_Per_Second) + Long_Integer (Nanos));
+      return Mission_Time (Total_Nanos);
    end To_Mission_Time;
 
    --  Convert Mission_Time to Time_Span
    function To_Time_Span (MT : Mission_Time) return Time_Span is
       Total_Nanos : constant Long_Integer := Long_Integer (MT);
       Seconds : constant Long_Integer := Total_Nanos / Nanoseconds_Per_Second;
-      Remainder : constant Long_Integer := Total_Nanos mod Nanoseconds_Per_Second;
+      Remainder_Nanos : constant Long_Integer := Total_Nanos mod Nanoseconds_Per_Second;
    begin
-      return Time_Span (Seconds) + Time_Span (Remainder) / Time_Span (Nanoseconds_Per_Second);
+      return Time_Span (Seconds) * Second + 
+             Time_Span (Remainder_Nanos) * Nanosecond;
    end To_Time_Span;
 
    --  Addition
@@ -116,18 +121,17 @@ package body mission_clock is
    function Image (MT : Mission_Time) return String is
       Total_Nanos : constant Long_Integer := Long_Integer (MT);
       Seconds : constant Long_Integer := Total_Nanos / Nanoseconds_Per_Second;
-      Remainder : constant Long_Integer := Total_Nanos mod Nanoseconds_Per_Second;
+      Remainder_Nanos : constant Long_Integer := Total_Nanos mod Nanoseconds_Per_Second;
 
       Hours : constant Long_Integer := Seconds / 3600;
       Minutes : constant Long_Integer := (Seconds mod 3600) / 60;
       Secs : constant Long_Integer := Seconds mod 60;
-      Nanos : constant Long_Integer := Remainder;
    begin
       return "Mission_Time(" & 
              Hours'Image & ":" & 
              Minutes'Image & ":" & 
              Secs'Image & "." & 
-             Nanos'Image & ")";
+             Remainder_Nanos'Image & ")";
    end Image;
 
 end mission_clock;
