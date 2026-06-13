@@ -54,31 +54,35 @@ package body mission_clock is
       return To_Time_Span (Nanos_Duration);
    end To_Time_Span;
 
-   --  Addition
+   --  Addition - use built-in modular arithmetic
    function "+" (Left, Right : Mission_Time) return Mission_Time is
+      Result : Mission_Time;
    begin
-      return Left + Right;
+      Result := Left + Right;
+      return Result;
    end "+";
 
-   --  Subtraction
+   --  Subtraction - use built-in modular arithmetic
    function "-" (Left, Right : Mission_Time) return Mission_Time is
+      Result : Mission_Time;
    begin
-      return Left - Right;
+      Result := Left - Right;
+      return Result;
    end "-";
 
-   --  Less than
+   --  Less than - use built-in comparison
    function "<" (Left, Right : Mission_Time) return Boolean is
    begin
-      return Left < Right;
+      return Mission_Time'Pos (Left) < Mission_Time'Pos (Right);
    end "<";
 
-   --  Less than or equal
+   --  Less than or equal - use built-in comparison
    function "<=" (Left, Right : Mission_Time) return Boolean is
    begin
-      return Left <= Right;
+      return Mission_Time'Pos (Left) <= Mission_Time'Pos (Right);
    end "<=";
 
-   --  Equality
+   --  Equality - use built-in comparison
    function "=" (Left, Right : Mission_Time) return Boolean is
    begin
       return Left = Right;
