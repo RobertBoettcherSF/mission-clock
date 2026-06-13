@@ -54,46 +54,44 @@ package body mission_clock is
       return To_Time_Span (Nanos_Duration);
    end To_Time_Span;
 
-   --  Addition - use built-in modular arithmetic
+   --  Addition - use built-in modular arithmetic via type conversion
    function "+" (Left, Right : Mission_Time) return Mission_Time is
-      Result : Mission_Time;
    begin
-      Result := Left + Right;
-      return Result;
+      return Mission_Time (Long_Integer (Left) + Long_Integer (Right));
    end "+";
 
-   --  Subtraction - use built-in modular arithmetic
+   --  Subtraction - use built-in modular arithmetic via type conversion
    function "-" (Left, Right : Mission_Time) return Mission_Time is
-      Result : Mission_Time;
    begin
-      Result := Left - Right;
-      return Result;
+      return Mission_Time (Long_Integer (Left) - Long_Integer (Right));
    end "-";
 
-   --  Less than - use built-in comparison
+   --  Less than - use integer comparison
    function "<" (Left, Right : Mission_Time) return Boolean is
    begin
-      return Mission_Time'Pos (Left) < Mission_Time'Pos (Right);
+      return Long_Integer (Left) < Long_Integer (Right);
    end "<";
 
-   --  Less than or equal - use built-in comparison
+   --  Less than or equal - use integer comparison
    function "<=" (Left, Right : Mission_Time) return Boolean is
    begin
-      return Mission_Time'Pos (Left) <= Mission_Time'Pos (Right);
+      return Long_Integer (Left) <= Long_Integer (Right);
    end "<=";
 
-   --  Equality - use built-in comparison
+   --  Equality - use integer comparison
    function "=" (Left, Right : Mission_Time) return Boolean is
    begin
-      return Left = Right;
+      return Long_Integer (Left) = Long_Integer (Right);
    end "=";
 
    --  Check for overflow in addition
    function Will_Overflow (Left, Right : Mission_Time) return Boolean is
-      Sum : constant Mission_Time := Left + Right;
+      Left_Int : constant Long_Integer := Long_Integer (Left);
+      Right_Int : constant Long_Integer := Long_Integer (Right);
+      Sum_Int : constant Long_Integer := Left_Int + Right_Int;
    begin
-      --  If sum is less than either operand, overflow occurred (modular arithmetic wrap-around)
-      return Sum < Left or Sum < Right;
+      --  Check if sum exceeds the maximum value for Mission_Time
+      return Sum_Int > Long_Integer (Mission_Time'Last);
    end Will_Overflow;
 
    --  Safe addition with overflow detection
