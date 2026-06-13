@@ -9,8 +9,7 @@ with Ada.Real_Time; use Ada.Real_Time;
 
 package body mission_clock is
 
-   --  Epoch for mission clock (2024-01-01 00:00:00 UTC)
-   --  Using Clock_Epoch as reference
+   --  Epoch for mission clock
    Mission_Epoch : constant Time := Clock_Epoch;
 
    --  Nanoseconds per second
@@ -19,19 +18,20 @@ package body mission_clock is
    --  Convert Time to Mission_Time (nanoseconds since mission epoch)
    function To_Mission_Time (T : Time) return Mission_Time is
       Time_Diff : constant Time_Span := T - Mission_Epoch;
-      Seconds : constant Time_Span := Time_Diff / Second;
-      Remainder : constant Time_Span := Time_Diff - (Seconds * Second);
-      Millis : constant Time_Span := Remainder / Millisecond;
-      Remainder2 : constant Time_Span := Remainder - (Millis * Millisecond);
-      Micros : constant Time_Span := Remainder2 / Microsecond;
-      Nanos : constant Time_Span := Remainder2 - (Micros * Microsecond);
-      Total_Nanos : constant Long_Integer := 
-        Long_Integer (Seconds / Second) * Nanoseconds_Per_Second +
-        Long_Integer (Millis) * 1_000_000 +
-        Long_Integer (Micros) * 1_000 +
-        Long_Integer (Nanos / Nanosecond);
+      Total_Seconds : constant Integer := Integer (Time_Diff / Seconds);
+      Remainder : constant Time_Span := Time_Diff - Time_Span (Total_Seconds) * Seconds;
+      Total_Millis : constant Integer := Integer (Remainder / Milliseconds);
+      Remainder2 : constant Time_Span := Remainder - Time_Span (Total_Millis) * Milliseconds;
+      Total_Micros : constant Integer := Integer (Remainder2 / Microseconds);
+      Remainder3 : constant Time_Span := Remainder2 - Time_Span (Total_Micros) * Microseconds;
+      Total_Nanos : constant Integer := Integer (Remainder3 / Nanoseconds);
+      Total_Nanos_All : constant Long_Integer := 
+        Long_Integer (Total_Seconds) * Nanoseconds_Per_Second +
+        Long_Integer (Total_Millis) * 1_000_000 +
+        Long_Integer (Total_Micros) * 1_000 +
+        Long_Integer (Total_Nanos);
    begin
-      return Mission_Time (Total_Nanos);
+      return Mission_Time (Total_Nanos_All);
    end To_Mission_Time;
 
    --  Convert Mission_Time to Time
@@ -41,8 +41,8 @@ package body mission_clock is
       Remainder_Nanos : constant Long_Integer := Total_Nanos mod Nanoseconds_Per_Second;
    begin
       return Mission_Epoch + 
-        Time_Span (Seconds) * Second + 
-        Time_Span (Remainder_Nanos) * Nanosecond;
+        Time_Span (Seconds) * Seconds + 
+        Time_Span (Remainder_Nanos) * Nanoseconds;
    end To_Time;
 
    --  Get current mission time
@@ -53,19 +53,20 @@ package body mission_clock is
 
    --  Convert Time_Span to Mission_Time
    function To_Mission_Time (D : Time_Span) return Mission_Time is
-      Seconds : constant Time_Span := D / Second;
-      Remainder : constant Time_Span := D - (Seconds * Second);
-      Millis : constant Time_Span := Remainder / Millisecond;
-      Remainder2 : constant Time_Span := Remainder - (Millis * Millisecond);
-      Micros : constant Time_Span := Remainder2 / Microsecond;
-      Nanos : constant Time_Span := Remainder2 - (Micros * Microsecond);
-      Total_Nanos : constant Long_Integer := 
-        Long_Integer (Seconds / Second) * Nanoseconds_Per_Second +
-        Long_Integer (Millis) * 1_000_000 +
-        Long_Integer (Micros) * 1_000 +
-        Long_Integer (Nanos / Nanosecond);
+      Total_Seconds : constant Integer := Integer (D / Seconds);
+      Remainder : constant Time_Span := D - Time_Span (Total_Seconds) * Seconds;
+      Total_Millis : constant Integer := Integer (Remainder / Milliseconds);
+      Remainder2 : constant Time_Span := Remainder - Time_Span (Total_Millis) * Milliseconds;
+      Total_Micros : constant Integer := Integer (Remainder2 / Microseconds);
+      Remainder3 : constant Time_Span := Remainder2 - Time_Span (Total_Micros) * Microseconds;
+      Total_Nanos : constant Integer := Integer (Remainder3 / Nanoseconds);
+      Total_Nanos_All : constant Long_Integer := 
+        Long_Integer (Total_Seconds) * Nanoseconds_Per_Second +
+        Long_Integer (Total_Millis) * 1_000_000 +
+        Long_Integer (Total_Micros) * 1_000 +
+        Long_Integer (Total_Nanos);
    begin
-      return Mission_Time (Total_Nanos);
+      return Mission_Time (Total_Nanos_All);
    end To_Mission_Time;
 
    --  Convert Mission_Time to Time_Span
@@ -74,8 +75,8 @@ package body mission_clock is
       Seconds : constant Long_Integer := Total_Nanos / Nanoseconds_Per_Second;
       Remainder_Nanos : constant Long_Integer := Total_Nanos mod Nanoseconds_Per_Second;
    begin
-      return Time_Span (Seconds) * Second + 
-             Time_Span (Remainder_Nanos) * Nanosecond;
+      return Time_Span (Seconds) * Seconds + 
+             Time_Span (Remainder_Nanos) * Nanoseconds;
    end To_Time_Span;
 
    --  Addition
