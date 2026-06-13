@@ -18,9 +18,9 @@ package body mission_clock is
 
    --  Convert Time to Mission_Time (nanoseconds since mission epoch)
    function To_Mission_Time (T : Time) return Mission_Time is
-      Delta : constant Time_Span := T - Mission_Epoch;
-      Seconds : constant Time_Span := Delta / 1.0;
-      Sub_Seconds : constant Time_Span := Delta - Seconds * 1.0;
+      Time_Delta : constant Time_Span := T - Mission_Epoch;
+      Seconds : constant Time_Span := Time_Delta / 1.0;
+      Sub_Seconds : constant Time_Span := Time_Delta - Seconds * 1.0;
       Nanos : constant := Duration (Sub_Seconds) * Duration (Nanoseconds_Per_Second);
    begin
       return Mission_Time (Long_Integer (Seconds) * Long_Integer (Nanoseconds_Per_Second) + Long_Integer (Nanos));
