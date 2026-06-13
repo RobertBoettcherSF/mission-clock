@@ -27,8 +27,8 @@ project Mission_Clock is
    --  Library kind (static or dynamic)
    for Library_Kind use "static";
 
-   --  Source files
-   for Source_Files use ("src/mission_clock.ads", "src/mission_clock.adb");
+   --  Source files (just filenames, not paths - Source_Dirs handles the path)
+   for Source_Files use ("mission_clock.ads", "mission_clock.adb");
 
    --  Main source (if building an executable)
    --  for Main use ("src/mission_clock_demo.adb");
