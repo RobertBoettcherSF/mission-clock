@@ -1,0 +1,71 @@
+--  mission_clock.gpr
+--
+--  GNAT Project file for Mission_Clock library
+--
+--  High-resolution time tracking with overflow safety for mission-critical applications
+--
+--  Copyright (c) 2026 Sternenfisch
+--  License: MIT (see LICENSE file)
+
+project Mission_Clock is
+
+   --  Project description
+   for Project_Description use "High-resolution time tracking with overflow safety for mission-critical applications";
+
+   --  Source directories
+   for Source_Dirs use ("src");
+
+   --  Object directory
+   for Object_Dir use "obj";
+
+   --  Executable directory
+   for Exec_Dir use "bin";
+
+   --  Library directory
+   for Library_Dir use "lib";
+
+   --  Library name
+   for Library_Name use "mission_clock";
+
+   --  Library kind (static or dynamic)
+   for Library_Kind use "static";
+
+   --  Ada standard version
+   for Ada_Standard use "Ada2022";
+
+   --  Source files
+   for Source_Files use ("src/mission_clock.ads", "src/mission_clock.adb");
+
+   --  Main source (if building an executable)
+   --  for Main use ("src/mission_clock_demo.adb");
+
+   --  Compiler options
+   package Compiler is
+      for Default_Switches ("Ada") use (
+         "-g",           --  Generate debug information
+         "-O2",          --  Optimization level 2
+         "-gnatwa",      --  Enable all warnings
+         "-gnatwe",      --  Treat warnings as errors
+         "-gnaty",       --  Enable style checking
+         "-gnatn",       --  Enable assertions
+         "-gnato",       --  Enable overflow checks
+         "-gnatp");      --  Enable preconditions/postconditions
+   end Compiler;
+
+   --  Linker options
+   package Linker is
+      for Default_Switches ("Ada") use ("-static");
+   end Linker;
+
+   --  Builder options
+   package Builder is
+      for Default_Switches ("Ada") use ("-j0");
+   end Builder;
+
+   --  Naming conventions
+   package Naming is
+      for Casing use "lowercase";
+      for Dot_Replacement use "-";
+   end Naming;
+
+end Mission_Clock;
