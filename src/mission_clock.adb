@@ -19,10 +19,17 @@ package body mission_clock is
    --  Convert Time to Mission_Time (nanoseconds since mission epoch)
    function To_Mission_Time (T : Time) return Mission_Time is
       Time_Diff : constant Time_Span := T - Mission_Epoch;
+      Seconds : constant Time_Span := Time_Diff / Second;
+      Remainder : constant Time_Span := Time_Diff - (Seconds * Second);
+      Millis : constant Time_Span := Remainder / Millisecond;
+      Remainder2 : constant Time_Span := Remainder - (Millis * Millisecond);
+      Micros : constant Time_Span := Remainder2 / Microsecond;
+      Nanos : constant Time_Span := Remainder2 - (Micros * Microsecond);
       Total_Nanos : constant Long_Integer := 
-        Long_Integer (Time_Diff / Millisecond) * 1_000_000 +
-        Long_Integer ((Time_Diff % Millisecond) / Microsecond) * 1_000 +
-        Long_Integer ((Time_Diff % Microsecond) / Nanosecond);
+        Long_Integer (Seconds / Second) * Nanoseconds_Per_Second +
+        Long_Integer (Millis) * 1_000_000 +
+        Long_Integer (Micros) * 1_000 +
+        Long_Integer (Nanos / Nanosecond);
    begin
       return Mission_Time (Total_Nanos);
    end To_Mission_Time;
@@ -46,10 +53,17 @@ package body mission_clock is
 
    --  Convert Time_Span to Mission_Time
    function To_Mission_Time (D : Time_Span) return Mission_Time is
+      Seconds : constant Time_Span := D / Second;
+      Remainder : constant Time_Span := D - (Seconds * Second);
+      Millis : constant Time_Span := Remainder / Millisecond;
+      Remainder2 : constant Time_Span := Remainder - (Millis * Millisecond);
+      Micros : constant Time_Span := Remainder2 / Microsecond;
+      Nanos : constant Time_Span := Remainder2 - (Micros * Microsecond);
       Total_Nanos : constant Long_Integer := 
-        Long_Integer (D / Millisecond) * 1_000_000 +
-        Long_Integer ((D % Millisecond) / Microsecond) * 1_000 +
-        Long_Integer ((D % Microsecond) / Nanosecond);
+        Long_Integer (Seconds / Second) * Nanoseconds_Per_Second +
+        Long_Integer (Millis) * 1_000_000 +
+        Long_Integer (Micros) * 1_000 +
+        Long_Integer (Nanos / Nanosecond);
    begin
       return Mission_Time (Total_Nanos);
    end To_Mission_Time;
