@@ -9,9 +9,6 @@
 
 project Mission_Clock is
 
-   --  Project description
-   for Project_Description use "High-resolution time tracking with overflow safety for mission-critical applications";
-
    --  Source directories
    for Source_Dirs use ("src");
 
@@ -30,9 +27,6 @@ project Mission_Clock is
    --  Library kind (static or dynamic)
    for Library_Kind use "static";
 
-   --  Ada standard version
-   for Ada_Standard use "Ada2022";
-
    --  Source files
    for Source_Files use ("src/mission_clock.ads", "src/mission_clock.adb");
 
@@ -49,7 +43,8 @@ project Mission_Clock is
          "-gnaty",       --  Enable style checking
          "-gnatn",       --  Enable assertions
          "-gnato",       --  Enable overflow checks
-         "-gnatp");      --  Enable preconditions/postconditions
+         "-gnatp",       --  Enable preconditions/postconditions
+         "-gnat2022");   --  Ada 2022 standard
    end Compiler;
 
    --  Linker options
