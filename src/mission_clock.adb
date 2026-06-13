@@ -18,8 +18,7 @@ package body mission_clock is
    --  Convert Time to Mission_Time (nanoseconds since mission epoch)
    function To_Mission_Time (T : Time) return Mission_Time is
       Time_Diff : constant Time_Span := T - Mission_Epoch;
-      --  Convert Time_Span to nanoseconds using To_Duration
-      Nanos : constant Duration := Duration (Time_Diff);
+      Nanos : constant Duration := To_Duration (Time_Diff);
       Total_Nanos : constant Long_Integer := Long_Integer (Nanos * Duration (Nanoseconds_Per_Second));
    begin
       return Mission_Time (Total_Nanos);
@@ -30,7 +29,7 @@ package body mission_clock is
       Total_Nanos : constant Long_Integer := Long_Integer (MT);
       Nanos_Duration : constant Duration := Duration (Total_Nanos) / Duration (Nanoseconds_Per_Second);
    begin
-      return Mission_Epoch + Time_Span (Nanos_Duration);
+      return Mission_Epoch + To_Time_Span (Nanos_Duration);
    end To_Time;
 
    --  Get current mission time
@@ -41,7 +40,7 @@ package body mission_clock is
 
    --  Convert Time_Span to Mission_Time
    function To_Mission_Time (D : Time_Span) return Mission_Time is
-      Nanos : constant Duration := Duration (D);
+      Nanos : constant Duration := To_Duration (D);
       Total_Nanos : constant Long_Integer := Long_Integer (Nanos * Duration (Nanoseconds_Per_Second));
    begin
       return Mission_Time (Total_Nanos);
@@ -52,7 +51,7 @@ package body mission_clock is
       Total_Nanos : constant Long_Integer := Long_Integer (MT);
       Nanos_Duration : constant Duration := Duration (Total_Nanos) / Duration (Nanoseconds_Per_Second);
    begin
-      return Time_Span (Nanos_Duration);
+      return To_Time_Span (Nanos_Duration);
    end To_Time_Span;
 
    --  Addition
